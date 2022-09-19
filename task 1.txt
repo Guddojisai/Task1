@@ -1,0 +1,117 @@
+import re
+def solve(s):
+   pat = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
+   if re.match(pat,s):
+      return True
+
+   print("email/username should have @ and followed by . ")
+   return False
+
+
+def password_check(passwd):
+    SpecialSym = ['$', '@', '#', '%']
+
+    val = True
+
+    if len(passwd) < 5 and len(passwd) > 16:
+        print('length should be greater than 6 or less than 20')
+
+        val = False
+
+    if not any(char.isdigit() for char in passwd):
+        print('Password should have at least one numeral')
+
+        val = False
+
+    if not any(char.isupper() for char in passwd):
+        print('Password should have at least one uppercase letter')
+
+        val = False
+
+    if not any(char.islower() for char in passwd):
+        print('Password should have at least one lowercase letter')
+
+        val = False
+
+    if not any(char in SpecialSym for char in passwd):
+        print('Password should have at least one of the symbols $@#%')
+
+        val = False
+
+    if val:
+        return val
+
+
+
+def register(username, password):
+    userval=solve(username)
+    passval=password_check(password)
+    val = False
+    if userval and passval:
+        val=True
+    elif userval==False and passval:
+        username=input("Please Reenter Username")
+        if solve(username):
+            val=True
+    elif userval and passval == False:
+        password = input("Please Reenter Password")
+        if password_check(password):
+            val = True
+    else:
+        username=input("Please Reenter Username")
+        password=input("Please Reenter Password")
+        if solve(username) and password_check(password):
+            val = True
+
+    if val:
+        file = open("accountfile.txt", "a")
+        file.write(username)
+        file.write(" ")
+        file.write(password)
+        file.write("\n")
+        file.close()
+        print("User Registered Successfully")
+
+def login(l_username,l_password):
+    val=True
+    with open('accountfile.txt', 'r') as f:
+        for line in f:
+            if l_username + ' ' + l_password + '\n' == line:
+                print('Welcome')
+                val=False
+                break
+    if val:
+        register(l_username, l_password)
+
+
+
+
+
+def main():
+    s = input("Register or Login or Forgot Password")
+    if s == "Register":
+        username = input("Please enter your username")
+        password = input("Please enter your password")
+        register(username, password)
+    elif s == "Login":
+        username = input("Please enter your username")
+        password = input("Please enter your password")
+        login(username, password)
+    elif s=="Forgot Password":
+        p_username = input("Please enter your username for password")
+        v = True
+        with open('accountfile.txt', 'r') as file:
+            for line in file:
+                username, password = line.split()
+                if p_username==username:
+                   print(password)
+                   v=False
+                   break
+        if v:
+            p_password=input("Please enter your password")
+            register(p_username, p_password)
+    else:
+        print("Enter any one of the above")
+
+if __name__ == '__main__':
+    main()
